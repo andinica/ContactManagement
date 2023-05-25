@@ -8,10 +8,11 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity(tableName = "contacts")
-public class Contact {
+public class Contact implements Serializable {
 
 
     @PrimaryKey(autoGenerate = true)

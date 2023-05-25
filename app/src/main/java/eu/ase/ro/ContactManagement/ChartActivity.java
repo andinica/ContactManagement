@@ -71,17 +71,17 @@ public class ChartActivity extends AppCompatActivity {
 //        openDefaultFragment(savedInstanceState);
     }
 
-    private void openDefaultFragment(Bundle savedInstanceState){
-        if(savedInstanceState == null){
-//            currentFragment = HomeFragment.getInstance();
-            openFragment();
-            navigationView.setCheckedItem(R.id.nav_contact);
-        }
-    }
+//    private void openDefaultFragment(Bundle savedInstanceState){
+//        if(savedInstanceState == null){
+////            currentFragment = HomeFragment.getInstance();
+//            openFragment();
+//            navigationView.setCheckedItem(R.id.nav_contact);
+//        }
+//    }
 
-    private void openFragment(){
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_container, currentFragment).commit();
-    }
+//    private void openFragment(){
+//        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_container, currentFragment).commit();
+//    }
 
     private void configNavigation() {
         //initialize toolbar
