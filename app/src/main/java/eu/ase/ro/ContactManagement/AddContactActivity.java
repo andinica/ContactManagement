@@ -49,10 +49,10 @@ public class AddContactActivity extends AppCompatActivity {
         tietBday = findViewById(R.id.add_contact_bday_tiet);
         tietAddress = findViewById(R.id.add_contact_address_tiet);
         btnSave = findViewById(R.id.add_contact_save_btn);
-        btnSave.setOnClickListener(saveExpenseEventListener());
+        btnSave.setOnClickListener(saveContactEventListener());
     }
 
-    private View.OnClickListener saveExpenseEventListener() {
+    private View.OnClickListener saveContactEventListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -10,8 +10,8 @@
 
     <!-- include should always be above the NavigationView -->
     <include
-        android:id="@+id/app_bar_others"
-        layout="@layout/app_bar_others"
+        android:id="@+id/app_bar_group"
+        layout="@layout/app_bar_group"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

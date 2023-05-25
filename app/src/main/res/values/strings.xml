@@ -39,8 +39,13 @@
     <string name="add_contact_date_error_msg">Accepted format for birthday is DD/MM/YYYY</string>
     <string name="add_contact_text_error_msg">Accepted format for text is a minimum of 3 letters</string>
     <string name="add_contact_pnumber_error_msg">Accepted phone numbers have 10 figures</string>
+    <string name="add_group_name_tiet_label">Name</string>
+    <string name="add_group_members_tv">Members</string>
+    <string name="add_group_name_tv">Group</string>
+    <string name="add_group_name_error_msg">Accepted format for name is a minimum of 3 characters</string>
+    <string name="til_hint_group">Search for a group..</string>
 
-    <string-array name="add_expense_category_values">
+    <string-array name="add_contact_category_values">
         <item>Family</item>
         <item>Work</item>
         <item>Close friends</item>
