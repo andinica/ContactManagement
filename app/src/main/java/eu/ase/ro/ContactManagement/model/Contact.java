@@ -3,21 +3,28 @@ package eu.ase.ro.ContactManagement.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Contact implements Parcelable {
+import java.util.Date;
+
+public class Contact {
 
 
 
     private String firstName;
     private String lastName;
+    private String group;
+
+
+
     private String phoneNumber;
     private String address;
-    private String birthday;
+    private Date birthday;
 
 
 
-    public Contact(String firstName, String lastName, String phoneNumber, String address, String birthday) {
+    public Contact(String firstName, String lastName, String group, String phoneNumber, String address, Date birthday) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.group = group;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.birthday = birthday;
@@ -25,25 +32,6 @@ public class Contact implements Parcelable {
 
 
 
-    protected Contact(Parcel parcel) {
-        this.firstName = parcel.readString();
-        this.lastName = parcel.readString();
-        this.phoneNumber = parcel.readString();
-        this.address = parcel.readString();
-        this.birthday = parcel.readString();
-    }
-
-    public static final Creator<Contact> CREATOR = new Creator<Contact>() {
-        @Override
-        public Contact createFromParcel(Parcel in) {
-            return new Contact(in);
-        }
-
-        @Override
-        public Contact[] newArray(int size) {
-            return new Contact[size];
-        }
-    };
 
 
     public String getFirstName() {
@@ -78,30 +66,26 @@ public class Contact implements Parcelable {
         this.address = address;
     }
 
-    public String getBirthday() {
+    public Date getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     @Override
     public String toString() {
-        return "Contact: Name:" + firstName + " " + lastName + ", phone number " + phoneNumber + ", address:  " + address + ", birthday: " + birthday;
+        return "Contact: Name:" + firstName + " " + lastName + ", group " + group + ", phone number " + phoneNumber + ", address:  " + address + ", birthday: " + birthday;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(firstName);
-        parcel.writeString(lastName);
-        parcel.writeString(phoneNumber);
-        parcel.writeString(address);
-        parcel.writeString(birthday);
-    }
 }

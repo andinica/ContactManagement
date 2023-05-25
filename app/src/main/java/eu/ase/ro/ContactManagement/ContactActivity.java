@@ -24,6 +24,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ContactActivity extends AppCompatActivity {
 
+    public static final String ACTION = "action";
+    public static final String UPDATE_ACTION = "update";
+    public static final String ADD_ACTION = "add";
+
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private FloatingActionButton fabAddContact;
@@ -115,7 +119,8 @@ public class ContactActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ContactActivity.this, GroupActivity.class);
+                Intent intent = new Intent(ContactActivity.this, AddContactActivity.class);
+//                intent.putExtra(ACTION, ADD_ACTION);
                 addContactLauncher.launch(intent);
             }
         };
