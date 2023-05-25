@@ -35,5 +35,6 @@ public abstract class DatabaseManager extends RoomDatabase {
     }
 
     public abstract ContactDao getContactDao();
+    public abstract GroupDao getGroupDao();
 
 }

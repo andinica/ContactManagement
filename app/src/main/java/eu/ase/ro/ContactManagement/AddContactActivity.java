@@ -67,14 +67,6 @@ public class AddContactActivity extends AppCompatActivity {
     }
 
     private boolean isValid() {
-        if (tietBday.getText() == null || tietBday.getText().toString().trim().isEmpty()
-                || DateConverter.fromString(tietBday.getText().toString()) == null) {
-            Toast.makeText(getApplicationContext(),
-                            R.string.add_contact_date_error_msg,
-                            Toast.LENGTH_SHORT)
-                    .show();
-            return false;
-        }
         if (tietFname.getText() == null || tietFname.getText().toString().length() < 3
                 || !tietFname.getText().toString().matches("[a-zA-Z]+")) {
             Toast.makeText(getApplicationContext(),
@@ -87,6 +79,14 @@ public class AddContactActivity extends AppCompatActivity {
                 || !tietLname.getText().toString().matches("[a-zA-Z]+")) {
             Toast.makeText(getApplicationContext(),
                             R.string.add_contact_text_error_msg,
+                            Toast.LENGTH_SHORT)
+                    .show();
+            return false;
+        }
+        if (tietBday.getText() == null || tietBday.getText().toString().trim().isEmpty()
+                || DateConverter.fromString(tietBday.getText().toString()) == null) {
+            Toast.makeText(getApplicationContext(),
+                            R.string.add_contact_date_error_msg,
                             Toast.LENGTH_SHORT)
                     .show();
             return false;
