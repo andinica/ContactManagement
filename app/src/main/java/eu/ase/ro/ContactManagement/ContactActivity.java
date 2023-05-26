@@ -6,13 +6,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -260,15 +257,15 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             public void runResultOnUiThread(Contact result) {
                 Contact contact = contacts.get(position);
+                Log.i("MainActivityDrawerHome", "Position "+ position);
                 contact.setAddress(result.getAddress());
                 contact.setFirstName(result.getFirstName());
                 contact.setLastName(result.getLastName());
-                contact.setGroup(result.getGroup());
+                contact.setGroupId(result.getGroupId());
                 contact.setPhoneNumber(result.getPhoneNumber());
                 contact.setBirthday(
                         result.getBirthday()
                 );
-
                 notifyAdapter();
             }
         };
@@ -280,6 +277,7 @@ public class ContactActivity extends AppCompatActivity {
             public void runResultOnUiThread(Contact result) {
                 //aici suntem cu notificarea din baza de date
                 contacts.add(result);
+                Log.i("MainActivityDrawerHome", "Contact on getInsertCallback" + result.toString());
                 notifyAdapter();
             }
         };

@@ -2,6 +2,7 @@ package eu.ase.ro.ContactManagement;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,12 +14,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 
 import eu.ase.ro.ContactManagement.async.Callback;
 import eu.ase.ro.ContactManagement.db.ContactService;
+import eu.ase.ro.ContactManagement.db.DatabaseManager;
+import eu.ase.ro.ContactManagement.db.GroupDao;
+import eu.ase.ro.ContactManagement.db.GroupService;
 import eu.ase.ro.ContactManagement.model.Contact;
+import eu.ase.ro.ContactManagement.model.Group;
 import eu.ase.ro.ContactManagement.utils.DateConverter;
 
 
@@ -31,11 +37,11 @@ public class AddContactActivity extends AppCompatActivity {
     private DatePicker dpBday;
     private TextInputEditText tietAddress;
     private Button btnSave;
-
+    ContactService contactService;
     private Intent intent;
-    private Contact contact = null;
+    private Contact contact = new Contact();
 
-    private ContactService contactService;
+    private GroupService groupService;
 
 
     @Override
@@ -43,7 +49,10 @@ public class AddContactActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
         intent = getIntent();
+        groupService = new GroupService(getApplicationContext());
         initComponents();
+        contactService = new ContactService(getApplicationContext());
+
         if (intent.hasExtra(CONTACT_KEY)) {
             contact = (Contact) intent.getSerializableExtra(CONTACT_KEY);
             createViewFromObject();
@@ -51,24 +60,44 @@ public class AddContactActivity extends AppCompatActivity {
     }
 
     private void createViewFromObject() {
-        tietFname.setText(contact.getFirstName());
-        tietAddress.setText(contact.getAddress());
-        tietLname.setText(contact.getLastName());
-        tietPnumber.setText(contact.getPhoneNumber());
+        if (contact != null) {
+            tietFname.setText(contact.getFirstName());
+            tietAddress.setText(contact.getAddress());
+            tietLname.setText(contact.getLastName());
+            tietPnumber.setText(contact.getPhoneNumber());
 
-
-        ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spnGroup.getAdapter();
-        for (int i = 0; i < adapter.getCount(); i++) {
-            String item = adapter.getItem(i).toString();
-            if (item.equals(contact.getGroup())) {
-                spnGroup.setSelection(i);
+            if (contact.getBirthday() != null) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(contact.getBirthday());
+                int year = calendar.get(Calendar.YEAR);
+                // Note: Calendar month is zero based.
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                dpBday.updateDate(year, month, day);
             }
+
+            // use groupService to fetch the group name corresponding to contact.getGroupId()
+            groupService.getGroupNameById(contact.getGroupId(), new Callback<String>() {
+                @Override
+                public void runResultOnUiThread(String result) {
+                    ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spnGroup.getAdapter();
+                    for (int i = 0; i < adapter.getCount(); i++) {
+                        String item = adapter.getItem(i).toString();
+                        if (item.equals(result)) {
+                            spnGroup.setSelection(i);
+                            break; // Exit the loop after finding the match
+                        }
+                    }
+                }
+            });
         }
     }
+
     private void initComponents() {
         tietFname = findViewById(R.id.add_contact_fname_tiet);
         tietLname = findViewById(R.id.add_contact_lname_tiet);
         spnGroup = findViewById(R.id.add_contact_group_spn);
+        populateGroupSpinner();
         tietPnumber = findViewById(R.id.add_contact_pnumber_tiet);
         dpBday = findViewById(R.id.add_contact_bday_dp);
         tietAddress = findViewById(R.id.add_contact_address_tiet);
@@ -83,9 +112,6 @@ public class AddContactActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isValid()) {
                     createFromViews();
-                    intent.putExtra(CONTACT_KEY, contact);
-                    setResult(RESULT_OK, intent);
-                    finish();
                 }
             }
         };
@@ -135,22 +161,65 @@ public class AddContactActivity extends AppCompatActivity {
         int year =  dpBday.getYear();
 
         String birthday = day + "/" + month + "/" + year;
-
-        String group = spnGroup.getSelectedItem().toString();
+        String groupName = spnGroup.getSelectedItem().toString();
         String fname = tietFname.getText().toString();
         String lname = tietLname.getText().toString();
         String pnumber = tietPnumber.getText().toString();
         String address = tietAddress.getText().toString();
-        if (contact == null) {
-            contact = new Contact(fname, lname, group, pnumber, address, DateConverter.fromString(birthday));
+        if(!groupName.equals("No groups yet, please add one")){
+            groupService.getGroupIdByName(groupName, new Callback<Long>() {
+                @Override
+                public void runResultOnUiThread(Long groupId) {
+                    Log.d("MainActivityDrawerHome", "Check group id: Group ID: " + groupId);
+                    contact.setFirstName(fname);
+                    contact.setLastName(lname);
+                    contact.setGroupId(groupId);
+                    contact.setAddress(address);
+                    contact.setBirthday(DateConverter.fromString(birthday));
+                    contact.setPhoneNumber(pnumber);
+                    intent.putExtra(CONTACT_KEY, contact);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+            });
         } else {
-            contact.setFirstName(fname);
-            contact.setLastName(lname);
-            contact.setGroup(fname);
-            contact.setAddress(fname);
-            contact.setFirstName(fname);
-            contact.setFirstName(fname);
+            if (contact == null) {
+                contact = new Contact(fname, lname, null, pnumber, address, DateConverter.fromString(birthday));
+                intent.putExtra(CONTACT_KEY, contact);
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                contact.setFirstName(fname);
+                contact.setLastName(lname);
+                contact.setGroupId(null);
+                contact.setAddress(address);
+                contact.setPhoneNumber(pnumber);
+                contact.setBirthday(DateConverter.fromString(birthday));
+                intent.putExtra(CONTACT_KEY, contact);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
         }
     }
+
+    private void populateGroupSpinner() {
+        groupService.getAllGroupNames(new Callback<List<String>>() {
+            @Override
+            public void runResultOnUiThread(List<String> result) {
+                if (result != null && !result.isEmpty()) {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
+                            android.R.layout.simple_spinner_dropdown_item, result);
+                    spnGroup.setAdapter(adapter);
+                } else {
+                    List<String> defaultList = new ArrayList<>();
+                    defaultList.add("No groups yet, please add one");
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
+                            android.R.layout.simple_spinner_dropdown_item, defaultList);
+                    spnGroup.setAdapter(adapter);
+                }
+            }
+        });
+    }
+
 
 }

@@ -15,7 +15,7 @@ import eu.ase.ro.ContactManagement.model.Contact;
 import eu.ase.ro.ContactManagement.model.Group;
 import eu.ase.ro.ContactManagement.utils.DateConverter;
 
-@Database(entities = {Contact.class, Group.class}, version = 1, exportSchema = false)
+@Database(entities = {Contact.class, Group.class}, version = 2, exportSchema = false)
 @TypeConverters({DateConverter.class})
 public abstract class DatabaseManager extends RoomDatabase {
 

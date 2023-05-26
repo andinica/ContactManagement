@@ -30,6 +30,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="@string/tv_add_contact_group"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/add_contact_lname_til" />
@@ -97,18 +98,29 @@
             android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/tv_birthday_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_dp_birthday_label"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_contact_pnumber_til"/>
+
+
     <DatePicker
         android:id="@+id/add_contact_bday_dp"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="160dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:calendarViewShown="false"
         android:datePickerMode="spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_contact_pnumber_til" />
+        app:layout_constraintTop_toBottomOf="@id/tv_birthday_label" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/add_contact_address_til"

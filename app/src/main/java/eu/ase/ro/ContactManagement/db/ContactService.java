@@ -1,6 +1,7 @@
 package eu.ase.ro.ContactManagement.db;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -22,8 +23,14 @@ public class ContactService {
         Callable<Contact> insertOperation = new Callable<Contact>() {
             @Override
             public Contact call() throws Exception {
+                Log.i("MainActivityDrawerHome", "Group name in ContactService.insert" + contact.toString());
                 if (contact == null || contact.getId() > 0) {
                     return null;
+                }
+                // Set the groupId if available
+                if (contact.getGroupId() == null) {
+                    // Set the groupId to -1 or any default value as per your requirement
+                    contact.setGroupId(-1L);
                 }
                 //aici ne aflam pe un alt thread...
                 long id = contactDao.insert(contact);
@@ -54,6 +61,7 @@ public class ContactService {
         Callable<Contact> updateOperation = new Callable<Contact>() {
             @Override
             public Contact call() throws Exception {
+                Log.i("MainActivityDrawerHome", "Contact in update method: + " + contact.toString());
                 if (contact == null || contact.getId() <= 0) {
                     return null;
                 }
@@ -88,5 +96,25 @@ public class ContactService {
             }
         };
         asyncTaskRunner.executeAsync(searchOperation, searchActivityThread);
+    }
+    public void getContactsByGroupId(long groupId, Callback<List<Contact>> getContactsByGroupActivityThread) {
+        Callable<List<Contact>> getContactsByGroupOperation = new Callable<List<Contact>>() {
+            @Override
+            public List<Contact> call() throws Exception {
+                return contactDao.getContactsByGroupId(groupId);
+            }
+        };
+        asyncTaskRunner.executeAsync(getContactsByGroupOperation, getContactsByGroupActivityThread);
+    }
+
+    public void getGroupCountForEach(Long id, Callback<Long> getContactsByGroupActivityThread) {
+        Callable<Long> getContactsByGroupOperation = new Callable<Long>() {
+            @Override
+            public Long call() throws Exception {
+                return contactDao.getGroupCountForEach(id);
+            }
+        };
+
+        asyncTaskRunner.executeAsync(getContactsByGroupOperation, getContactsByGroupActivityThread);
     }
 }

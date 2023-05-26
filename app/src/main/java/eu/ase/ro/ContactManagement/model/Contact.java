@@ -3,13 +3,21 @@ package eu.ase.ro.ContactManagement.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@Entity(tableName = "contacts")
+@Entity(tableName = "contacts",
+        foreignKeys = @ForeignKey(
+        entity = Group.class,
+        parentColumns = "id",
+        childColumns = "groupId",
+        onDelete = ForeignKey.SET_NULL),
+        indices = @Index("groupId"))
 public class Contact implements Serializable {
 
 
@@ -21,7 +29,7 @@ public class Contact implements Serializable {
     @ColumnInfo
     private String lastName;
     @ColumnInfo
-    private String group;
+    private Long groupId;
     @ColumnInfo
     private String phoneNumber;
     @ColumnInfo
@@ -30,21 +38,21 @@ public class Contact implements Serializable {
     private Date birthday;
 
 
-    public Contact(long id, String firstName, String lastName, String group, String phoneNumber, String address, Date birthday) {
+    public Contact(long id, String firstName, String lastName, Long groupId, String phoneNumber, String address, Date birthday) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.group = group;
+        this.groupId = groupId;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.birthday = birthday;
     }
 
     @Ignore
-    public Contact(String firstName, String lastName, String group, String phoneNumber, String address, Date birthday) {
+    public Contact(String firstName, String lastName, Long group, String phoneNumber, String address, Date birthday) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.group = group;
+        this.groupId = group;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.birthday = birthday;
@@ -98,17 +106,21 @@ public class Contact implements Serializable {
         this.birthday = birthday;
     }
 
-    public String getGroup() {
-        return group;
+    public Long getGroupId() {
+        return groupId;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public Contact(){
+
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     @Override
     public String toString() {
-        return "Contact: Name:" + firstName + " " + lastName + ", group " + group + ", phone number " + phoneNumber + ", address:  " + address + ", birthday: " + birthday;
+        return "Contact: Name:" + firstName + " " + lastName + ", group " + groupId + ", phone number " + phoneNumber + ", address:  " + address + ", birthday: " + birthday;
     }
 
 

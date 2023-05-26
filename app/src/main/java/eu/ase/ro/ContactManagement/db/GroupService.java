@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import eu.ase.ro.ContactManagement.async.AsyncTaskRunner;
 import eu.ase.ro.ContactManagement.async.Callback;
 import eu.ase.ro.ContactManagement.model.Group;
+import eu.ase.ro.ContactManagement.model.GroupWithMemberCount;
 
 public class GroupService {
 
@@ -90,5 +91,46 @@ public class GroupService {
             }
         };
         asyncTaskRunner.executeAsync(searchOperation, searchActivityThread);
+    }
+
+    public void getAllGroupNames(Callback<List<String>> getAllGroupNamesActivityThread) {
+        Callable<List<String>> getAllGroupNamesOperation = new Callable<List<String>>() {
+            @Override
+            public List<String> call() throws Exception {
+                return groupDao.getAllGroupNames();
+            }
+        };
+
+        asyncTaskRunner.executeAsync(getAllGroupNamesOperation, getAllGroupNamesActivityThread);
+    }
+    public void getGroupById(Long id, Callback<Group> getGroupByIdActivityThread) {
+        Callable<Group> getGroupByIdOperation = new Callable<Group>() {
+            @Override
+            public Group call() throws Exception {
+                return groupDao.getGroupById(id);
+            }
+        };
+        asyncTaskRunner.executeAsync(getGroupByIdOperation, getGroupByIdActivityThread);
+    }
+
+    public void getGroupNameById(Long id, Callback<String> getGroupNameByIdActivityThread) {
+        Callable<String> getGroupNameByIdOperation = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return groupDao.getGroupNameById(id);
+            }
+        };
+
+        asyncTaskRunner.executeAsync(getGroupNameByIdOperation, getGroupNameByIdActivityThread);
+    }
+
+    public void getGroupIdByName(String name, Callback<Long> getGroupIdByNameActivityThread) {
+        Callable<Long> getGroupIdByNameOperation = new Callable<Long>() {
+            @Override
+            public Long call() throws Exception {
+                return groupDao.getGroupIdByName(name);
+            }
+        };
+        asyncTaskRunner.executeAsync(getGroupIdByNameOperation, getGroupIdByNameActivityThread);
     }
 }

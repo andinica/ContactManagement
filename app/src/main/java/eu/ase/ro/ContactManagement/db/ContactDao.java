@@ -18,6 +18,10 @@ public interface ContactDao {
     List<Contact> getAll();
     @Query("SELECT * FROM contacts WHERE firstName LIKE :searchQuery OR lastName LIKE :searchQuery OR phoneNumber LIKE :searchQuery")
     List<Contact> queryContacts(String searchQuery);
+    @Query("SELECT * FROM contacts WHERE groupId = :groupId")
+    List<Contact> getContactsByGroupId(long groupId);
+    @Query("SELECT COUNT(*) as count FROM contacts WHERE groupId = :groupId")
+    Long getGroupCountForEach(long groupId);
     @Update
     int update(Contact contact); // reprezinta numarul de inregistrari afectate
     @Delete
