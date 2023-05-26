@@ -37,21 +37,8 @@ public class EditContactsAdapter extends ArrayAdapter<Contact> {
         View view = inflater.inflate(resource, parent, false);
         Contact contact = contacts.get(position);
         if (contact != null) {
-            TextView tv_name = view.findViewById(R.id.tv_lv_contact_name);
-            TextView tv_phone = view.findViewById(R.id.tv_lv_contact_phone);
+            TextView tv_name = view.findViewById(R.id.tv_lv_edit_contact_name);
             CheckBox cb_contact = view.findViewById(R.id.cb_lv_edit_contact);  // the checkbox
-            String name = contact.getFirstName() + " " + contact.getLastName();
-            addTextViewContent(tv_name, name);
-            addTextViewContent(tv_phone, contact.getPhoneNumber());
-
-            // handle checkbox events here (or you can create a separate method for it)
-            cb_contact.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    // implement your logic here
-                    // for example, you could update the Contact object with the new status
-                }
-            });
         }
         return view;
     }

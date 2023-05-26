@@ -75,7 +75,7 @@
         app:layout_constraintTop_toBottomOf="@id/tv_add_group_members"
         app:layout_constraintStart_toEndOf="@id/lv_activity_add_group"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="Edit" />
+        android:text="@string/btn_add_group_edit_label" />
 
     <Button
         android:id="@+id/btn_add_group_save"

@@ -8,6 +8,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,6 +36,7 @@ import eu.ase.ro.ContactManagement.async.Callback;
 import eu.ase.ro.ContactManagement.db.ContactService;
 import eu.ase.ro.ContactManagement.model.Contact;
 import eu.ase.ro.ContactManagement.utils.ContactAdapter;
+import eu.ase.ro.ContactManagement.utils.EditContactsAdapter;
 import eu.ase.ro.ContactManagement.utils.MemberAdapter;
 
 public class EditMembersActivity extends AppCompatActivity {
@@ -50,6 +53,7 @@ public class EditMembersActivity extends AppCompatActivity {
     private FloatingActionButton fabAddContact;
     ListView lvMembers;
     private TextInputEditText tietEditMembers;
+    private CheckBox cbContacts;
 
     private List<Contact> contacts = new ArrayList<>();
 
@@ -65,19 +69,17 @@ public class EditMembersActivity extends AppCompatActivity {
         launcher = getLauncher();
         contactService = new ContactService(getApplicationContext());
         contactService.getAll(getAllCallback()); // GET ONLY FROM GROUP
-
     }
 
     public void initComponents(){
 
         tietEditMembers = findViewById(R.id.tiet_edit_members);
-        lvMembers = findViewById(R.id.lv_contact);
+        lvMembers = findViewById(R.id.lv_edit_group_contact);
         lvMembers.setOnItemClickListener(getItemClickEventListener());// EDIT TO BE CHECKBOX, HAVE A LIST
+        cbContacts = findViewById(R.id.cb_lv_edit_contact);
+        // handle checkbox events here (or you can create a separate method for it)
+
         addAdapter();
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setCheckedItem(R.id.nav_contact);
-        fabAddContact = findViewById(R.id.fab_add_contact);
-        fabAddContact.setOnClickListener(getAddContactEvent());
         tietEditMembers.addTextChangedListener(searchTextWatcher());
     }
 
@@ -199,23 +201,19 @@ public class EditMembersActivity extends AppCompatActivity {
 
 
     private void addAdapter() {
-        MemberAdapter adapter = new MemberAdapter(getApplicationContext(), R.layout.lv_item_contact, contacts, getLayoutInflater());
+        EditContactsAdapter adapter = new EditContactsAdapter(getApplicationContext(), R.layout.lv_item_edit_contact, contacts, getLayoutInflater());
         lvMembers.setAdapter(adapter);
     }
 
     private void notifyAdapter() {
-        MemberAdapter adapter = (MemberAdapter) lvMembers.getAdapter();
+        EditContactsAdapter adapter = (EditContactsAdapter) lvMembers.getAdapter();
         adapter.notifyDataSetChanged();
     }
     private AdapterView.OnItemClickListener getItemClickEventListener() {
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getApplicationContext(), AddContactActivity.class);
-                intent.putExtra(AddContactActivity.CONTACT_KEY, contacts.get(i));
-                intent.putExtra(UPDATED_POSITION, i);
-                intent.putExtra(ACTION, UPDATE_ACTION);
-                launcher.launch(intent);
+
             }
         };
     }

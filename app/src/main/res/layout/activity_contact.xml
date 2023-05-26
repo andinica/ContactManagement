@@ -8,10 +8,9 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-<!-- include should always be above the NavigationView -->
     <include
         android:id="@+id/app_bar_contact"
-        layout="@layout/app_bar_main"
+        layout="@layout/app_bar_contact"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -46,6 +46,7 @@
     <string name="til_hint_group">Search for groups..</string>
     <string name="lv_contact_value">Empty value</string>
     <string name="tv_dp_birthday_label">Birthday</string>
+    <string name="btn_add_group_edit_label">Edit</string>
 
     <string-array name="add_contact_category_values">
         <item>Family</item>

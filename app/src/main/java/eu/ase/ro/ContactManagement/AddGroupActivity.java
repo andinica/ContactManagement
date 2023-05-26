@@ -33,7 +33,10 @@ public class AddGroupActivity extends AppCompatActivity {
 
     public static final String GROUP_KEY = "groupKey";
     public static final String EDITED_CONTACTS = "editedContacts";
+    public static final String MEMBERS = "members";
+    public static final String ADD_ACTION = "add";
     private ActivityResultLauncher<Intent> launcher;
+
 
     private Intent intent;
     private Group group = null;
@@ -80,8 +83,9 @@ public class AddGroupActivity extends AppCompatActivity {
                     memberAdapter.notifyDataSetChanged(); // Notify the adapter to refresh the view
                 }
             });
+        } else {
+            Log.i("MainActivityDrawerHome", "has no group_key");
         }
-        else {             Log.i("MainActivityDrawerHome", "has no group_key");}
     }
 
     public void initComponents() {
@@ -89,15 +93,16 @@ public class AddGroupActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btn_add_group_save);
         btnEdit = findViewById(R.id.btn_add_group_edit);
         btnSave.setOnClickListener(saveGroupEventListener());
-        btnEdit.setOnClickListener(saveGroupEventListener());
+        btnEdit.setOnClickListener(getEditEvent());
         lvMembers = findViewById(R.id.lv_activity_add_group);
         addMemberAdapter();
     }
+
     private View.OnClickListener saveGroupEventListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               createFromViews();
+                createFromViews();
             }
         };
     }
@@ -151,17 +156,55 @@ public class AddGroupActivity extends AppCompatActivity {
         return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), callback);
     }
 
-    private Callback<List<Contact>> getEditCallback() {
-        return new Callback<List<Contact>>() {
+    private ActivityResultCallback<ActivityResult> getEditContactActivityResultCallback() {
+        return new ActivityResultCallback<ActivityResult>() {
             @Override
-            public void runResultOnUiThread(List<Contact> result) {
-                members.addAll(result);
+            public void onActivityResult(ActivityResult result) {
+                if (result.getData() == null || result.getResultCode() != RESULT_OK) {
+                    return;
+                }
+                List<Contact> contactsInGroup = (List<Contact>) result.getData().getSerializableExtra("CONTACTS_IN_GROUP");
+                List<Contact> contactsOutOfGroup = (List<Contact>) result.getData().getSerializableExtra("CONTACTS_OUT_OF_GROUP");
+
+                contactService.updateContacts(contactsOutOfGroup, new Callback<Integer>() {
+                    @Override
+                    public void runResultOnUiThread(Integer result) {
+                        members.clear();
+                        members.addAll(contactsInGroup);
+                        notifyMemberAdapter();
+                    }
+                });
+            }
+        };
+    }
+
+
+    private Callback<Contact> getUpdateCallback() {
+        return new Callback<Contact>() {
+            @Override
+            public void runResultOnUiThread(Contact result) {
+                members.clear();
+                members.add(result);
                 Log.i("MainActivityDrawerHome", "Contact on getInsertCallback" + result.toString());
                 notifyMemberAdapter();
             }
         };
     }
 
+
+    private View.OnClickListener getEditEvent() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AddGroupActivity.this, EditMembersActivity.class);
+                intent.putExtra(MEMBERS, (Serializable) members);
+                intent.putExtra(EDITED_CONTACTS, (Serializable) editedContacts);
+                intent.putExtra(GROUP_KEY, groupId);
+                Log.i("MainActivityDrawerHome", "Launching editmemberactivity");
+                launcher.launch(intent);
+            }
+        };
+    }
 
     private ActivityResultCallback<ActivityResult> getEditMembersActivityResultCallback() {
         return new ActivityResultCallback<ActivityResult>() {
