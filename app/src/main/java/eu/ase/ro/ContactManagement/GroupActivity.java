@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -16,6 +17,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,6 +55,7 @@ public class GroupActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private FloatingActionButton fabAddGroup;
     ListView lvGroups;
+    private TextInputEditText tietGroup;
 
     private GroupService groupService;
 
@@ -103,6 +107,7 @@ public class GroupActivity extends AppCompatActivity {
 
     private void initComponents() {
         // initialise your views
+        tietGroup = findViewById(R.id.tiet_group);
         fabAddGroup = findViewById(R.id.fab_add_group);
         fabAddGroup.setOnClickListener(getAddGroupEvent());
         lvGroups = findViewById(R.id.lv_group);
@@ -113,8 +118,48 @@ public class GroupActivity extends AppCompatActivity {
         navigationView.setCheckedItem(R.id.nav_group);
         fabAddGroup = findViewById(R.id.fab_add_group);
         fabAddGroup.setOnClickListener(getAddGroupEvent());
+        tietGroup.addTextChangedListener(searchTextWatcher());
     }
 
+    private TextWatcher searchTextWatcher() {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().isEmpty()) {
+                    // Fetch all contacts
+                    groupService.getAll(new Callback<List<Group>>() {
+                        @Override
+                        public void runResultOnUiThread(List<Group> result) {
+                            if (result != null) {
+                                groups.clear();
+                                groups.addAll(result);
+                                notifyAdapter();
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String searchTerm = editable.toString().trim();
+                groupService.queryGroups(searchTerm, new Callback<List<Group>>() {
+                    @Override
+                    public void runResultOnUiThread(List<Group> result) {
+                        if (result != null) {
+                            groups.clear();
+                            groups.addAll(result);
+                            notifyAdapter();
+                        }
+                    }
+                });
+            }
+        };
+
+    }
 
     private void configNavigation() {
         //initialize toolbar

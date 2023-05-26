@@ -8,7 +8,6 @@ import java.util.concurrent.Callable;
 
 import eu.ase.ro.ContactManagement.async.AsyncTaskRunner;
 import eu.ase.ro.ContactManagement.async.Callback;
-import eu.ase.ro.ContactManagement.model.Contact;
 import eu.ase.ro.ContactManagement.model.Group;
 
 public class GroupService {
@@ -83,13 +82,13 @@ public class GroupService {
         asyncTaskRunner.executeAsync(deleteOperation, deleteActivityThread);
     }
 
-//    public void queryGroups(String searchQuery, Callback<List<Contact>> searchActivityThread) {
-//        Callable<List<Contact>> searchOperation = new Callable<List<Contact>>() {
-//            @Override
-//            public List<Contact> call() throws Exception {
-//                return groupDao.queryContacts('%' + searchQuery + '%');
-//            }
-//        };
-//        asyncTaskRunner.executeAsync(searchOperation, searchActivityThread);
-//    }
+    public void queryGroups(String searchQuery, Callback<List<Group>> searchActivityThread) {
+        Callable<List<Group>> searchOperation = new Callable<List<Group>>() {
+            @Override
+            public List<Group> call() throws Exception {
+                return groupDao.queryGroups('%' + searchQuery + '%');
+            }
+        };
+        asyncTaskRunner.executeAsync(searchOperation, searchActivityThread);
+    }
 }

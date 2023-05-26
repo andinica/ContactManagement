@@ -17,6 +17,8 @@ public interface GroupDao {
     long insert(Group group); //id- daca totul este ok; sau -1 daca au fost probleme la insert
     @Query("SELECT * FROM groups")
     List<Group> getAll();
+    @Query("SELECT * FROM groups WHERE name LIKE :searchQuery")
+    List<Group> queryGroups(String searchQuery);
     @Update
     int update(Group group); // reprezinta numarul de inregistrari afectate
     @Delete
