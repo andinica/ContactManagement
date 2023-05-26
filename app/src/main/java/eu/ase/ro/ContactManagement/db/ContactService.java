@@ -27,12 +27,9 @@ public class ContactService {
                 if (contact == null || contact.getId() > 0) {
                     return null;
                 }
-                // Set the groupId if available
                 if (contact.getGroupId() == null) {
-                    // Set the groupId to -1 or any default value as per your requirement
                     contact.setGroupId(-1L);
                 }
-                //aici ne aflam pe un alt thread...
                 long id = contactDao.insert(contact);
                 if (id < 0) {
                     return null;
@@ -48,8 +45,6 @@ public class ContactService {
         Callable<List<Contact>> getAllOperation = new Callable<List<Contact>>() {
             @Override
             public List<Contact> call() throws Exception {
-                //ne aflam pe un alt thread.
-                //ma conectez la baza de date
                 return contactDao.getAll();
             }
         };

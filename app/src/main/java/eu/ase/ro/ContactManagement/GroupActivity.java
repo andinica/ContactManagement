@@ -162,14 +162,9 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     private void configNavigation() {
-        //initialize toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //initialize drawer layout
         drawerLayout = findViewById(R.id.drawer_layout);
-        //link lateral menu with actionbar
-        //+open event
-        //create utility instance
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 drawerLayout,
@@ -219,7 +214,6 @@ public class GroupActivity extends AppCompatActivity {
         return new Callback<Group>() {
             @Override
             public void runResultOnUiThread(Group result) {
-                //aici suntem cu notificarea din baza de date
                 groups.add(result);
                 Log.i("MainActivityDrawerHome", "Group name on getInsertCallback" + result.toString());
                 notifyAdapter();

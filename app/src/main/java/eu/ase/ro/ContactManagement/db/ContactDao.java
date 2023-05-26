@@ -13,7 +13,7 @@ import eu.ase.ro.ContactManagement.model.Contact;
 @Dao
 public interface ContactDao {
     @Insert
-    long insert(Contact contact); //id- daca totul este ok; sau -1 daca au fost probleme la insert
+    long insert(Contact contact);
     @Query("SELECT * FROM contacts")
     List<Contact> getAll();
     @Query("SELECT * FROM contacts WHERE firstName LIKE :searchQuery OR lastName LIKE :searchQuery OR phoneNumber LIKE :searchQuery")
@@ -23,7 +23,7 @@ public interface ContactDao {
     @Query("SELECT COUNT(*) as count FROM contacts WHERE groupId = :groupId")
     Long getGroupCountForEach(long groupId);
     @Update
-    int update(Contact contact); // reprezinta numarul de inregistrari afectate
+    int update(Contact contact);
     @Delete
     int delete(Contact contact);
 

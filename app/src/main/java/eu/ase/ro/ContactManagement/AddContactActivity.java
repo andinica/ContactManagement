@@ -70,13 +70,11 @@ public class AddContactActivity extends AppCompatActivity {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(contact.getBirthday());
                 int year = calendar.get(Calendar.YEAR);
-                // Note: Calendar month is zero based.
                 int month = calendar.get(Calendar.MONTH);
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
                 dpBday.updateDate(year, month, day);
             }
 
-            // use groupService to fetch the group name corresponding to contact.getGroupId()
             groupService.getGroupNameById(contact.getGroupId(), new Callback<String>() {
                 @Override
                 public void runResultOnUiThread(String result) {
@@ -85,7 +83,7 @@ public class AddContactActivity extends AppCompatActivity {
                         String item = adapter.getItem(i).toString();
                         if (item.equals(result)) {
                             spnGroup.setSelection(i);
-                            break; // Exit the loop after finding the match
+                            break;
                         }
                     }
                 }

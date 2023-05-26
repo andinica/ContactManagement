@@ -28,7 +28,6 @@ public class GroupService {
                 if (group == null || group.getId() > 0) {
                     return null;
                 }
-                //aici ne aflam pe un alt thread...
                 long id = groupDao.insert(group);
                 if (id < 0) {
                     return null;
@@ -44,8 +43,6 @@ public class GroupService {
         Callable<List<Group>> getAllOperation = new Callable<List<Group>>() {
             @Override
             public List<Group> call() throws Exception {
-                //ne aflam pe un alt thread.
-                //ma conectez la baza de date
                 return groupDao.getAll();
             }
         };

@@ -10,12 +10,11 @@ import java.util.List;
 
 import eu.ase.ro.ContactManagement.model.Contact;
 import eu.ase.ro.ContactManagement.model.Group;
-import eu.ase.ro.ContactManagement.model.GroupWithMemberCount;
 
 @Dao
 public interface GroupDao {
     @Insert
-    long insert(Group group); //id- daca totul este ok; sau -1 daca au fost probleme la insert
+    long insert(Group group);
     @Query("SELECT * FROM groups")
     List<Group> getAll();
     @Query("SELECT * FROM groups WHERE name LIKE :searchQuery")
@@ -29,7 +28,7 @@ public interface GroupDao {
     @Query("SELECT id FROM groups WHERE name = :name")
     Long getGroupIdByName(String name);
     @Update
-    int update(Group group); // reprezinta numarul de inregistrari afectate
+    int update(Group group);
     @Delete
     int delete(Group group);
 }

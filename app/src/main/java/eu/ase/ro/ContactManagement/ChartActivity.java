@@ -28,7 +28,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import eu.ase.ro.ContactManagement.async.Callback;
 import eu.ase.ro.ContactManagement.db.ContactService;
@@ -41,7 +44,7 @@ public class ChartActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
-    private RelativeLayout chartContainer;
+    private AnyChartView chartContainer;
     private List<Group> groups = new ArrayList<>();
     private List<Long> appearances = new ArrayList<>();
 
@@ -52,8 +55,6 @@ public class ChartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chart);
         configNavigation();
         chartContainer = findViewById(R.id.any_chart_view);
-
-        // Fetch data from ContactService and GroupService
         ContactService contactService = new ContactService(getApplicationContext());
         GroupService groupService = new GroupService(getApplicationContext());
 
@@ -61,19 +62,22 @@ public class ChartActivity extends AppCompatActivity {
             @Override
             public void runResultOnUiThread(List<Group> result) {
                 if (result != null) {
-                    groups.clear();
-                    groups.addAll(result);
-                    for(Group group : groups ){
-                        contactService.getGroupCountForEach(group.getId(), new Callback<Long>(){
+                    Map<Group, Long> groupCounts = new LinkedHashMap<>();
+                    for(Group group : result) {
+                        contactService.getGroupCountForEach(group.getId(), new Callback<Long>() {
                             @Override
-                            public void runResultOnUiThread(Long result) {
-                                if (result != null){
-                                    appearances.add(result);
+                            public void runResultOnUiThread(Long count) {
+                                if (count != null) {
+                                    groupCounts.put(group, count);
+                                }
+                                if(groupCounts.size() == result.size()) {
+                                    List<Group> groupsList = new ArrayList<>(groupCounts.keySet());
+                                    List<Long> countsList = new ArrayList<>(groupCounts.values());
+                                    createBarChart(groupsList, countsList);
                                 }
                             }
                         });
                     }
-                    createBarChart(groups, appearances);
                 }
             }
         });
@@ -95,13 +99,11 @@ public class ChartActivity extends AppCompatActivity {
                     finish();
                 }
                 if (item.getItemId() == R.id.nav_group) {
-                    //pressed on groups
                     navigationView.setCheckedItem(R.id.nav_group);
                     Log.i("MainActivityDrawerHome", "Pressed groups");
                     Toast.makeText(getApplicationContext(),
                             getString(R.string.show_option, item.getTitle()),
                             Toast.LENGTH_LONG).show();
-//                    currentFragment = HomeFragment.getInstance();
                     Intent intent = new Intent(ChartActivity.this, GroupActivity.class);
                     startActivity(intent);
                     finish();
@@ -143,30 +145,28 @@ public class ChartActivity extends AppCompatActivity {
 
         chartContainer.addView(anyChartView);
 
-        // Create a bar chart
         Cartesian cartesian = AnyChart.column();
-
-        // Set data
         List<DataEntry> dataEntries = new ArrayList<>();
-        int i = 0;
-        for (Group group : groups) {
-            dataEntries.add(new ValueDataEntry(group.getName(),appearances.get(i++)));
-            Column column = cartesian.column(dataEntries);
-            column.tooltip()
-                    .titleFormat("{%X}")
-                    .position(Position.CENTER_BOTTOM)
-                    .anchor(Anchor.CENTER_BOTTOM)
-                    .offsetX(0d)
-                    .offsetY(5d)
-                    .format("{%Value}{groupsSeparator: }");
 
-            cartesian.title(group.getName() + " - Number of Members");
-            cartesian.yAxis(0).title("Members");
-            cartesian.xAxis(0).title("Group");
+        for(int i = 0; i < groups.size(); i++) {
+            dataEntries.add(new ValueDataEntry(groups.get(i).getName(), appearances.get(i)));
+        }
+        Column column = cartesian.column(dataEntries);
+        column.tooltip()
+                .titleFormat("{%X}")
+                .position(Position.CENTER_BOTTOM)
+                .anchor(Anchor.CENTER_BOTTOM)
+                .offsetX(0d)
+                .offsetY(5d)
+                .format("{%Value}{groupsSeparator: }");
 
-            anyChartView.setChart(cartesian);
+        cartesian.title("Number of Members");
+        cartesian.yAxis(0).title("Members");
+        cartesian.xAxis(0).title("Group");
+        cartesian.xAxis(0).overlapMode("allowOverlap");
+        cartesian.xAxis(0).labels().rotation(-45);
+
+        anyChartView.setChart(cartesian);
         }
     }
 
-
-}

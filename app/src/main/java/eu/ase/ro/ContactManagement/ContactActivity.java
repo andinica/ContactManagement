@@ -200,14 +200,9 @@ public class ContactActivity extends AppCompatActivity {
     }
 
     private void configNavigation() {
-        //initialize toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //initialize drawer layout
         drawerLayout = findViewById(R.id.drawer_layout);
-        //link lateral menu with actionbar
-        //+open event
-        //create utility instance
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 drawerLayout,
