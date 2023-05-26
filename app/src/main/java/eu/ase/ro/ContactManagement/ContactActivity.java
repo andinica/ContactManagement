@@ -270,7 +270,6 @@ public class ContactActivity extends AppCompatActivity {
         return new Callback<Contact>() {
             @Override
             public void runResultOnUiThread(Contact result) {
-                //aici suntem cu notificarea din baza de date
                 contacts.add(result);
                 Log.i("MainActivityDrawerHome", "Contact on getInsertCallback" + result.toString());
                 notifyAdapter();

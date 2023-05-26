@@ -78,7 +78,7 @@
         android:text="Edit" />
 
     <Button
-        android:id="@+id/add_group_save_btn"
+        android:id="@+id/btn_add_group_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_save_label"

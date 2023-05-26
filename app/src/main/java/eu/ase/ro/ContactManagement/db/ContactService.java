@@ -71,6 +71,18 @@ public class ContactService {
         asyncTaskRunner.executeAsync(updateOperation, updateActivityThread);
     }
 
+    public void updateContacts(List<Contact> contacts, Callback<Integer> updateActivityThread) {
+        Callable<Integer> updateOperation = new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                int count = contactDao.updateContacts(contacts);
+                return count;
+            }
+        };
+
+        asyncTaskRunner.executeAsync(updateOperation, updateActivityThread);
+    }
+
     public void delete(Contact contact, Callback<Boolean> deleteActivityThread) {
         Callable<Boolean> deleteOperation = new Callable<Boolean>() {
             @Override

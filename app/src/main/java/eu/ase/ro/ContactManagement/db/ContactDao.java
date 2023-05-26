@@ -24,6 +24,8 @@ public interface ContactDao {
     Long getGroupCountForEach(long groupId);
     @Update
     int update(Contact contact);
+    @Update
+    int updateContacts(List<Contact> contacts);
     @Delete
     int delete(Contact contact);
 

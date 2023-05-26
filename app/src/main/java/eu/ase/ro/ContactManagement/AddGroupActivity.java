@@ -8,10 +8,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,21 +25,26 @@ import eu.ase.ro.ContactManagement.db.ContactService;
 import eu.ase.ro.ContactManagement.db.GroupService;
 import eu.ase.ro.ContactManagement.model.Contact;
 import eu.ase.ro.ContactManagement.model.Group;
+import eu.ase.ro.ContactManagement.utils.ContactAdapter;
 import eu.ase.ro.ContactManagement.utils.MemberAdapter;
 
 public class AddGroupActivity extends AppCompatActivity {
 
 
     public static final String GROUP_KEY = "groupKey";
+    public static final String EDITED_CONTACTS = "editedContacts";
+    private ActivityResultLauncher<Intent> launcher;
 
     private Intent intent;
     private Group group = null;
     private Button btnSave;
-    TextInputEditText tietGroupName;
+    private Button btnEdit;
+    private TextInputEditText tietGroupName;
     private Long groupId = null;
     GroupService groupService;
     ContactService contactService;
     private List<Contact> members = new ArrayList<>();
+    List<Contact> editedContacts = new ArrayList<>();
     ListView lvMembers;
     MemberAdapter memberAdapter;
 
@@ -45,6 +55,8 @@ public class AddGroupActivity extends AppCompatActivity {
         Log.d("AddGroupActivity", "Group ID: " + groupId);
         setContentView(R.layout.activity_add_group);
         initComponents();
+        launcher = getLauncher();
+
         intent = getIntent();
         groupService = new GroupService(getApplicationContext());
         contactService = new ContactService(getApplicationContext());
@@ -74,8 +86,10 @@ public class AddGroupActivity extends AppCompatActivity {
 
     public void initComponents() {
         tietGroupName = findViewById(R.id.tiet_add_group_name);
-        btnSave = findViewById(R.id.add_group_save_btn);
+        btnSave = findViewById(R.id.btn_add_group_save);
+        btnEdit = findViewById(R.id.btn_add_group_edit);
         btnSave.setOnClickListener(saveGroupEventListener());
+        btnEdit.setOnClickListener(saveGroupEventListener());
         lvMembers = findViewById(R.id.lv_activity_add_group);
         addMemberAdapter();
     }
@@ -83,13 +97,17 @@ public class AddGroupActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isValid()) {
-                    createFromViews();
-                    Log.i("MainActivityDrawer","Group is: " + group.toString());
-                    intent.putExtra(GROUP_KEY, group);
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
+               createFromViews();
+            }
+        };
+    }
+
+    private View.OnClickListener getEditMembers() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AddGroupActivity.this, EditMembersActivity.class);
+                launcher.launch(intent);
             }
         };
     }
@@ -112,6 +130,9 @@ public class AddGroupActivity extends AppCompatActivity {
         } else {
             group.setName(name);
         }
+        intent.putExtra(GROUP_KEY, group);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     private void addMemberAdapter() {
@@ -119,8 +140,39 @@ public class AddGroupActivity extends AppCompatActivity {
         lvMembers.setAdapter(memberAdapter);
     }
 
-    private void notifyAdapter() {
-        MemberAdapter adapter = (MemberAdapter) lvMembers.getAdapter();
+    private void notifyMemberAdapter() {
+        ContactAdapter adapter = (ContactAdapter) lvMembers.getAdapter();
         adapter.notifyDataSetChanged();
     }
+
+
+    private ActivityResultLauncher<Intent> getLauncher() {
+        ActivityResultCallback<ActivityResult> callback = getEditMembersActivityResultCallback();
+        return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), callback);
+    }
+
+    private Callback<List<Contact>> getEditCallback() {
+        return new Callback<List<Contact>>() {
+            @Override
+            public void runResultOnUiThread(List<Contact> result) {
+                members.addAll(result);
+                Log.i("MainActivityDrawerHome", "Contact on getInsertCallback" + result.toString());
+                notifyMemberAdapter();
+            }
+        };
+    }
+
+
+    private ActivityResultCallback<ActivityResult> getEditMembersActivityResultCallback() {
+        return new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getData() == null || result.getResultCode() != RESULT_OK) {
+                    return;
+                }
+//                contactService.updateContacts(members, getEditCallback());
+            }
+        };
+    }
+
 }
