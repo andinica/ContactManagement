@@ -15,10 +15,8 @@ import eu.ase.ro.ContactManagement.model.Group;
 public interface GroupDao {
     @Insert
     long insert(Group group); //id- daca totul este ok; sau -1 daca au fost probleme la insert
-    @Query("select * from groups")
+    @Query("SELECT * FROM groups")
     List<Group> getAll();
-    @Query("SELECT name from groups WHERE id = :id")
-    String getGroupNameById(double id);
     @Update
     int update(Group group); // reprezinta numarul de inregistrari afectate
     @Delete

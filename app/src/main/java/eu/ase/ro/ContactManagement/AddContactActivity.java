@@ -43,7 +43,6 @@ public class AddContactActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
         intent = getIntent();
-
         initComponents();
         if (intent.hasExtra(CONTACT_KEY)) {
             contact = (Contact) intent.getSerializableExtra(CONTACT_KEY);

@@ -35,7 +35,7 @@ public class AddGroupActivity extends AppCompatActivity {
         intent = getIntent();
         initComponents();
         if (intent.hasExtra(GROUP_KEY)) {
-            Group group = (Group) intent.getSerializableExtra(GROUP_KEY);
+            group = (Group) intent.getSerializableExtra(GROUP_KEY);
             tietGroupName.setText(group.getName());
         }
     }
