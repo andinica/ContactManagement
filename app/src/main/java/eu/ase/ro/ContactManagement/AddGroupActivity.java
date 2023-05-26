@@ -68,15 +68,15 @@ public class AddGroupActivity extends AppCompatActivity {
                     memberAdapter.notifyDataSetChanged(); // Notify the adapter to refresh the view
                 }
             });
-                }
-        else {             Log.i("MainActivityDrawerHome", "has no group_key");}
         }
+        else {             Log.i("MainActivityDrawerHome", "has no group_key");}
+    }
 
     public void initComponents() {
-        tietGroupName = findViewById(R.id.add_group_name_tiet);
+        tietGroupName = findViewById(R.id.tiet_add_group_name);
         btnSave = findViewById(R.id.add_group_save_btn);
         btnSave.setOnClickListener(saveGroupEventListener());
-        lvMembers = findViewById(R.id.add_group_members_lv);
+        lvMembers = findViewById(R.id.lv_activity_add_group);
         addMemberAdapter();
     }
     private View.OnClickListener saveGroupEventListener() {

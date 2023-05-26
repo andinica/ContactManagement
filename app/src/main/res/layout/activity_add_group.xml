@@ -7,7 +7,7 @@
     tools:context=".AddGroupActivity">
 
     <TextView
-        android:id="@+id/add_group_name_tv"
+        android:id="@+id/tv_add_group_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -22,7 +22,7 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/add_group_name_til"
+        android:id="@+id/til_add_group_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -32,17 +32,17 @@
         android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_group_name_tv">
+        app:layout_constraintTop_toBottomOf="@id/tv_add_group_name">
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/add_group_name_tiet"
+        android:id="@+id/tiet_add_group_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/add_group_name_tiet_label" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
-        android:id="@+id/add_group_members_tv"
+        android:id="@+id/tv_add_group_members"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -53,30 +53,39 @@
         android:text="@string/add_group_members_tv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_group_name_til" />
+        app:layout_constraintTop_toBottomOf="@id/til_add_group_name" />
 
 
     <ListView
-        android:id="@+id/add_group_members_lv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:id="@+id/lv_activity_add_group"
+        android:layout_width="250dp"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_group_members_tv" />
+        app:layout_constraintTop_toBottomOf="@id/tv_add_group_members"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_add_group_edit"/>
+
+    <Button
+        android:id="@+id/btn_add_group_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_add_group_members"
+        app:layout_constraintStart_toEndOf="@id/lv_activity_add_group"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Edit" />
 
     <Button
         android:id="@+id/add_group_save_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add_contact_save_btn_label"
+        android:text="@string/btn_save_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="48dp"
         />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

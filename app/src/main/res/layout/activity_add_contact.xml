@@ -18,10 +18,10 @@
         android:entries="@array/add_contact_category_values"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_group_members_tv" />
+        app:layout_constraintTop_toBottomOf="@id/tv_add_group_members" />
 
     <TextView
-        android:id="@+id/add_group_members_tv"
+        android:id="@+id/tv_add_group_members"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -146,7 +146,7 @@
         android:id="@+id/add_contact_save_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add_contact_save_btn_label"
+        android:text="@string/btn_save_label"
         app:layout_constraintTop_toBottomOf="@id/add_contact_address_til"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

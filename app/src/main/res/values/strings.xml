@@ -34,7 +34,7 @@
     <string name="add_contact_bday_tiet_label">Birthday</string>
     <string name="add_contact_address_tiet_label">Address</string>
     <string name="add_contact_lname_tiet_label">Last name</string>
-    <string name="add_contact_save_btn_label">SAVE</string>
+    <string name="btn_save_label">SAVE</string>
 
     <string name="add_contact_date_error_msg">Accepted format for birthday is DD/MM/YYYY</string>
     <string name="add_contact_text_error_msg">Accepted format for text is a minimum of 3 characters</string>
