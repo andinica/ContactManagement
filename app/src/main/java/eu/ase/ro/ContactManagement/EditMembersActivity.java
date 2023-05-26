@@ -68,17 +68,15 @@ public class EditMembersActivity extends AppCompatActivity {
         initComponents();
         launcher = getLauncher();
         contactService = new ContactService(getApplicationContext());
-        contactService.getAll(getAllCallback()); // GET ONLY FROM GROUP
+        contactService.getAll(getAllCallback());
     }
 
     public void initComponents(){
 
         tietEditMembers = findViewById(R.id.tiet_edit_members);
         lvMembers = findViewById(R.id.lv_edit_group_contact);
-        lvMembers.setOnItemClickListener(getItemClickEventListener());// EDIT TO BE CHECKBOX, HAVE A LIST
+        lvMembers.setOnItemClickListener(getItemClickEventListener());
         cbContacts = findViewById(R.id.cb_lv_edit_contact);
-        // handle checkbox events here (or you can create a separate method for it)
-
         addAdapter();
         tietEditMembers.addTextChangedListener(searchTextWatcher());
     }
@@ -91,7 +89,6 @@ public class EditMembersActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().isEmpty()) {
-                    // Fetch all contacts
                     contactService.getAll(new Callback<List<Contact>>() {
                         @Override
                         public void runResultOnUiThread(List<Contact> result) {
@@ -152,7 +149,6 @@ public class EditMembersActivity extends AppCompatActivity {
                     contactService.insert(contact, getInsertCallback());
                 } else if (UPDATE_ACTION.equals(result.getData().getStringExtra(ACTION))) {
                     int position = result.getData().getIntExtra(UPDATED_POSITION, 0);
-                    Log.i("MainActivityDrawerHome", "Position "+ position);
                     contactService.update(contact, getUpdateCallback(position));
                 }
             }
@@ -163,7 +159,6 @@ public class EditMembersActivity extends AppCompatActivity {
             @Override
             public void runResultOnUiThread(Contact result) {
                 Contact contact = contacts.get(position);
-                Log.i("MainActivityDrawerHome", "Position "+ position);
                 contact.setAddress(result.getAddress());
                 contact.setFirstName(result.getFirstName());
                 contact.setLastName(result.getLastName());
@@ -181,9 +176,7 @@ public class EditMembersActivity extends AppCompatActivity {
         return new Callback<Contact>() {
             @Override
             public void runResultOnUiThread(Contact result) {
-                //aici suntem cu notificarea din baza de date
                 contacts.add(result);
-                Log.i("MainActivityDrawerHome", "Contact on getInsertCallback" + result.toString());
                 notifyAdapter();
             }
         };

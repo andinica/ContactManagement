@@ -74,7 +74,6 @@ public class ContactActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if(item.getItemId() == R.id.nav_group){
                     navigationView.setCheckedItem(R.id.nav_group);
-                    Log.i("MainActivityDrawerHome", "Pressed contacts");
                     Toast.makeText(getApplicationContext(),
                             getString(R.string.show_option, item.getTitle()),
                             Toast.LENGTH_LONG).show();
@@ -84,7 +83,6 @@ public class ContactActivity extends AppCompatActivity {
                 }
                 if(item.getItemId() == R.id.nav_chart){
                     navigationView.setCheckedItem(R.id.nav_chart);
-                    Log.i("MainActivityDrawerHome", "Pressed charts");
                     Toast.makeText(getApplicationContext(),
                             getString(R.string.show_option, item.getTitle()),
                             Toast.LENGTH_LONG).show();
@@ -94,7 +92,6 @@ public class ContactActivity extends AppCompatActivity {
                 }
                 if(item.getItemId() == R.id.nav_exit){
                     navigationView.setCheckedItem(R.id.nav_exit);
-                    Log.i("MainActivityDrawerHome", "Pressed exit");
                     finish();
                     return true;
                 }
@@ -126,7 +123,6 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().isEmpty()) {
-                    // Fetch all contacts
                     contactService.getAll(new Callback<List<Contact>>() {
                         @Override
                         public void runResultOnUiThread(List<Contact> result) {
@@ -175,7 +171,6 @@ public class ContactActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.no, null)
                 .setNegativeButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // delete contact
                         Contact contactToDelete = contacts.get(position);
                         contactService.delete(contactToDelete, getDeleteCallback(position));
                     }
@@ -241,7 +236,6 @@ public class ContactActivity extends AppCompatActivity {
                     contactService.insert(contact, getInsertCallback());
                 } else if (UPDATE_ACTION.equals(result.getData().getStringExtra(ACTION))) {
                     int position = result.getData().getIntExtra(UPDATED_POSITION, 0);
-                    Log.i("MainActivityDrawerHome", "Position "+ position);
                     contactService.update(contact, getUpdateCallback(position));
                 }
             }
@@ -252,7 +246,6 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             public void runResultOnUiThread(Contact result) {
                 Contact contact = contacts.get(position);
-                Log.i("MainActivityDrawerHome", "Position "+ position);
                 contact.setAddress(result.getAddress());
                 contact.setFirstName(result.getFirstName());
                 contact.setLastName(result.getLastName());
@@ -271,7 +264,6 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             public void runResultOnUiThread(Contact result) {
                 contacts.add(result);
-                Log.i("MainActivityDrawerHome", "Contact on getInsertCallback" + result.toString());
                 notifyAdapter();
             }
         };

@@ -55,7 +55,6 @@ public class AddGroupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("AddGroupActivity", "Group ID: " + groupId);
         setContentView(R.layout.activity_add_group);
         initComponents();
         launcher = getLauncher();
@@ -64,27 +63,17 @@ public class AddGroupActivity extends AppCompatActivity {
         groupService = new GroupService(getApplicationContext());
         contactService = new ContactService(getApplicationContext());
         if (intent.hasExtra(GROUP_KEY)) {
-            Log.i("MainActivityDrawerHome", "has group_key");
             group = (Group) intent.getSerializableExtra(GROUP_KEY);
-            Log.i("MainActivityDrawerHome", group.toString());
             tietGroupName.setText(group.getName());
             groupId = group.getId();
             contactService.getContactsByGroupId(groupId, new Callback<List<Contact>>() {
                 @Override
                 public void runResultOnUiThread(List<Contact> result) {
-                    members.clear(); // Clear the existing list
-                    members.addAll(result); // Add the retrieved contacts
-                    Log.d("MainActivityDrawerHome", "Retrieved contacts: " + members.size());
-
-                    for (Contact contact : members) {
-                        Log.i("MainActivityDrawerHome", "Contact: " + contact.getFirstName() + " " + contact.getLastName());
-                    }
-
-                    memberAdapter.notifyDataSetChanged(); // Notify the adapter to refresh the view
+                    members.clear();
+                    members.addAll(result);
+                    memberAdapter.notifyDataSetChanged();
                 }
             });
-        } else {
-            Log.i("MainActivityDrawerHome", "has no group_key");
         }
     }
 
@@ -185,7 +174,6 @@ public class AddGroupActivity extends AppCompatActivity {
             public void runResultOnUiThread(Contact result) {
                 members.clear();
                 members.add(result);
-                Log.i("MainActivityDrawerHome", "Contact on getInsertCallback" + result.toString());
                 notifyMemberAdapter();
             }
         };
@@ -200,7 +188,6 @@ public class AddGroupActivity extends AppCompatActivity {
                 intent.putExtra(MEMBERS, (Serializable) members);
                 intent.putExtra(EDITED_CONTACTS, (Serializable) editedContacts);
                 intent.putExtra(GROUP_KEY, groupId);
-                Log.i("MainActivityDrawerHome", "Launching editmemberactivity");
                 launcher.launch(intent);
             }
         };
@@ -213,7 +200,6 @@ public class AddGroupActivity extends AppCompatActivity {
                 if (result.getData() == null || result.getResultCode() != RESULT_OK) {
                     return;
                 }
-//                contactService.updateContacts(members, getEditCallback());
             }
         };
     }

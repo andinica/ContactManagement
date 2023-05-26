@@ -23,7 +23,6 @@ public class ContactService {
         Callable<Contact> insertOperation = new Callable<Contact>() {
             @Override
             public Contact call() throws Exception {
-                Log.i("MainActivityDrawerHome", "Group name in ContactService.insert" + contact.toString());
                 if (contact == null || contact.getId() > 0) {
                     return null;
                 }
@@ -56,7 +55,6 @@ public class ContactService {
         Callable<Contact> updateOperation = new Callable<Contact>() {
             @Override
             public Contact call() throws Exception {
-                Log.i("MainActivityDrawerHome", "Contact in update method: + " + contact.toString());
                 if (contact == null || contact.getId() <= 0) {
                     return null;
                 }

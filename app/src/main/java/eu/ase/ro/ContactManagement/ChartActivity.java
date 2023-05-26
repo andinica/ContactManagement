@@ -87,10 +87,8 @@ public class ChartActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if (item.getItemId() == R.id.nav_contact) {//ifs are redundant here (if logs are removed)
-                    //pressed on contacts
+                if (item.getItemId() == R.id.nav_contact) {
                     navigationView.setCheckedItem(R.id.nav_contact);
-                    Log.i("MainActivityDrawerHome", "Pressed contacts");
                     Toast.makeText(getApplicationContext(),
                             getString(R.string.show_option, item.getTitle()),
                             Toast.LENGTH_LONG).show();
@@ -100,7 +98,6 @@ public class ChartActivity extends AppCompatActivity {
                 }
                 if (item.getItemId() == R.id.nav_group) {
                     navigationView.setCheckedItem(R.id.nav_group);
-                    Log.i("MainActivityDrawerHome", "Pressed groups");
                     Toast.makeText(getApplicationContext(),
                             getString(R.string.show_option, item.getTitle()),
                             Toast.LENGTH_LONG).show();
@@ -110,7 +107,6 @@ public class ChartActivity extends AppCompatActivity {
                 }
                 if (item.getItemId() == R.id.nav_exit) {
                     navigationView.setCheckedItem(R.id.nav_exit);
-                    Log.i("MainActivityDrawerHome", "Pressed exit");
                     finish();
                     return true;
                 }
@@ -135,7 +131,6 @@ public class ChartActivity extends AppCompatActivity {
     }
 
     private void createBarChart(List<Group> groups, List<Long> appearances) {
-        // Initialize AnyChart library
         AnyChartView anyChartView = new AnyChartView(this);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,

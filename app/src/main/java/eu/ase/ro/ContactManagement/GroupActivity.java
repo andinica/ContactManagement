@@ -75,7 +75,6 @@ public class GroupActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if(item.getItemId() == R.id.nav_contact){
                     navigationView.setCheckedItem(R.id.nav_contact);
-                    Log.i("MainActivityDrawerHome", "Pressed contacts");
                     Toast.makeText(getApplicationContext(),
                             getString(R.string.show_option, item.getTitle()),
                             Toast.LENGTH_LONG).show();
@@ -85,7 +84,6 @@ public class GroupActivity extends AppCompatActivity {
                 }
                 if(item.getItemId() == R.id.nav_chart){
                     navigationView.setCheckedItem(R.id.nav_chart);
-                    Log.i("MainActivityDrawerHome", "Pressed charts");
                     Toast.makeText(getApplicationContext(),
                             getString(R.string.show_option, item.getTitle()),
                             Toast.LENGTH_LONG).show();
@@ -95,7 +93,6 @@ public class GroupActivity extends AppCompatActivity {
                 }
                 if(item.getItemId() == R.id.nav_exit){
                     navigationView.setCheckedItem(R.id.nav_exit);
-                    Log.i("MainActivityDrawerHome", "Pressed exit");
                     finish();
                     return true;
                 }
@@ -106,7 +103,6 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
-        // initialise your views
         tietGroup = findViewById(R.id.tiet_group);
         fabAddGroup = findViewById(R.id.fab_add_group);
         fabAddGroup.setOnClickListener(getAddGroupEvent());
@@ -129,7 +125,6 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().isEmpty()) {
-                    // Fetch all contacts
                     groupService.getAll(new Callback<List<Group>>() {
                         @Override
                         public void runResultOnUiThread(List<Group> result) {
@@ -203,7 +198,6 @@ public class GroupActivity extends AppCompatActivity {
                     groupService.insert(group, getInsertCallback());
                 } else if (UPDATE_ACTION.equals(result.getData().getStringExtra(ACTION))) {
                     int position = result.getData().getIntExtra(UPDATED_POSITION, 0);
-                    Log.i("MainActivityDrawerHome", "Group name "+ group.getName());
                     groupService.update(group, getUpdateCallback(position));
                 }
             }
@@ -215,7 +209,6 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void runResultOnUiThread(Group result) {
                 groups.add(result);
-                Log.i("MainActivityDrawerHome", "Group name on getInsertCallback" + result.toString());
                 notifyAdapter();
             }
         };
@@ -282,7 +275,6 @@ public class GroupActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.no, null)
                 .setNegativeButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // delete group
                         Group groupToDelete = groups.get(position);
                         groupService.delete(groupToDelete, getDeleteCallback(position));
                     }

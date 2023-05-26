@@ -37,7 +37,6 @@ public class GroupAdapter extends ArrayAdapter<Group> {
         if (group != null) {
             TextView tv_name = view.findViewById(R.id.tv_lv_group_name);
             addTextViewContent(tv_name, group.getName());
-            Log.i("MainActivityDrawerHome", "Group name on getView = " + group.getName());
         }
         return view;
     }
