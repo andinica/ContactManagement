@@ -27,7 +27,7 @@
 
     <string name="title_activity_chart">Chart</string>
     <string name="menu_chart">Chart</string>
-    <string name="til_hint_contact">Search for a contact..</string>
+    <string name="tiet_hint_contact">Search for a contact..</string>
     <string name="tv_add_contact_group">Group</string>
     <string name="add_contact_fname_tiet_label">First name</string>
     <string name="add_contact_pnumber_tiet_label">Phone number</string>

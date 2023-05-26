@@ -1,16 +1,23 @@
 package eu.ase.ro.ContactManagement;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -18,7 +25,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,9 +53,9 @@ public class ContactActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private FloatingActionButton fabAddContact;
     ListView lvContacts;
+    private TextInputEditText tietContact;
 
     private List<Contact> contacts = new ArrayList<>();
-    private ActivityResultLauncher<Intent> addContactLauncher;
 
     private ContactService contactService;
 
@@ -62,8 +71,6 @@ public class ContactActivity extends AppCompatActivity {
         launcher = getLauncher();
         contactService = new ContactService(getApplicationContext());
         contactService.getAll(getAllCallback());
-
-        addContactLauncher = registerAddContactLauncher();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -102,14 +109,97 @@ public class ContactActivity extends AppCompatActivity {
 
     public void initComponents(){
 
+        tietContact = findViewById(R.id.tiet_contact);
         lvContacts = findViewById(R.id.lv_contact);
         lvContacts.setOnItemClickListener(getItemClickEventListener());
+        lvContacts.setOnItemLongClickListener(getItemLongClickEventListener());
         addAdapter();
         navigationView = findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_contact);
         fabAddContact = findViewById(R.id.fab_add_contact);
         fabAddContact.setOnClickListener(getAddContactEvent());
+        tietContact.addTextChangedListener(searchTextWatcher());
+    }
 
+    private TextWatcher searchTextWatcher() {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().isEmpty()) {
+                    // Fetch all contacts
+                    contactService.getAll(new Callback<List<Contact>>() {
+                        @Override
+                        public void runResultOnUiThread(List<Contact> result) {
+                            if (result != null) {
+                                contacts.clear();
+                                contacts.addAll(result);
+                                notifyAdapter();
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String searchTerm = editable.toString().trim();
+                contactService.queryContacts(searchTerm, new Callback<List<Contact>>() {
+                    @Override
+                    public void runResultOnUiThread(List<Contact> result) {
+                        if (result != null) {
+                            contacts.clear();
+                            contacts.addAll(result);
+                            notifyAdapter();
+                        }
+                    }
+                });
+            }
+        };
+
+    }
+
+    private AdapterView.OnItemLongClickListener getItemLongClickEventListener() {
+        return new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                showDeleteConfirmationDialog(position);
+                return true;
+            }
+        };
+    }
+
+    private void showDeleteConfirmationDialog(int position) {
+        new AlertDialog.Builder(ContactActivity.this)
+                .setTitle("Delete contact")
+                .setMessage("Are you sure you want to delete this contact?")
+                .setPositiveButton(android.R.string.no, null)
+                .setNegativeButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // delete contact
+                        Contact contactToDelete = contacts.get(position);
+                        contactService.delete(contactToDelete, getDeleteCallback(position));
+                    }
+                })
+                .setIcon(ContextCompat.getDrawable(ContactActivity.this, R.drawable.ic_baseline_front_hand_24))
+                .show();
+    }
+
+    private Callback<Boolean> getDeleteCallback(final int position) {
+        return new Callback<Boolean>() {
+            @Override
+            public void runResultOnUiThread(Boolean result) {
+                if(result) {
+                    contacts.remove(position);
+                    notifyAdapter();
+                    Toast.makeText(ContactActivity.this, "Contact deleted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ContactActivity.this, "Error occurred while deleting contact", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
     }
 
     private void configNavigation() {
@@ -137,17 +227,11 @@ public class ContactActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ContactActivity.this, AddContactActivity.class);
                 intent.putExtra(ACTION, ADD_ACTION);
-                addContactLauncher.launch(intent);
+                launcher.launch(intent);
             }
         };
     }
     private ActivityResultLauncher<Intent> getLauncher() {
-        ActivityResultCallback<ActivityResult> callback = getAddContactActivityResultCallback();
-        return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), callback);
-    }
-
-    private ActivityResultLauncher<Intent> registerAddContactLauncher() {
-
         ActivityResultCallback<ActivityResult> callback = getAddContactActivityResultCallback();
         return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), callback);
     }
@@ -165,6 +249,7 @@ public class ContactActivity extends AppCompatActivity {
                     contactService.insert(contact, getInsertCallback());
                 } else if (UPDATE_ACTION.equals(result.getData().getStringExtra(ACTION))) {
                     int position = result.getData().getIntExtra(UPDATED_POSITION, 0);
+                    Log.i("MainActivityDrawerHome", "Position "+ position);
                     contactService.update(contact, getUpdateCallback(position));
                 }
             }
@@ -208,6 +293,8 @@ public class ContactActivity extends AppCompatActivity {
             }
         };
     }
+
+
 
     private void addAdapter() {
         ContactAdapter adapter = new ContactAdapter(getApplicationContext(), R.layout.lv_item_contact, contacts, getLayoutInflater());

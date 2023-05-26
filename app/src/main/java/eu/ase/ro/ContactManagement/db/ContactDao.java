@@ -14,8 +14,10 @@ import eu.ase.ro.ContactManagement.model.Contact;
 public interface ContactDao {
     @Insert
     long insert(Contact contact); //id- daca totul este ok; sau -1 daca au fost probleme la insert
-    @Query("select * from contacts")
+    @Query("SELECT * FROM contacts")
     List<Contact> getAll();
+    @Query("SELECT * FROM contacts WHERE firstName LIKE :searchQuery OR lastName LIKE :searchQuery OR phoneNumber LIKE :searchQuery")
+    List<Contact> queryContacts(String searchQuery);
     @Update
     int update(Contact contact); // reprezinta numarul de inregistrari afectate
     @Delete

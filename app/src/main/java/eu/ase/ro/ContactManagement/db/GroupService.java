@@ -1,18 +1,18 @@
 package eu.ase.ro.ContactManagement.db;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import eu.ase.ro.ContactManagement.async.AsyncTaskRunner;
-import eu.ase.ro.ContactManagement.async.AsyncTaskRunner;
 import eu.ase.ro.ContactManagement.async.Callback;
-import eu.ase.ro.ContactManagement.db.DatabaseManager;
-import eu.ase.ro.ContactManagement.db.GroupDao;
+import eu.ase.ro.ContactManagement.model.Contact;
 import eu.ase.ro.ContactManagement.model.Group;
 
 public class GroupService {
+
     private final AsyncTaskRunner asyncTaskRunner;
     private final GroupDao groupDao;
 
@@ -82,4 +82,14 @@ public class GroupService {
 
         asyncTaskRunner.executeAsync(deleteOperation, deleteActivityThread);
     }
+
+//    public void queryGroups(String searchQuery, Callback<List<Contact>> searchActivityThread) {
+//        Callable<List<Contact>> searchOperation = new Callable<List<Contact>>() {
+//            @Override
+//            public List<Contact> call() throws Exception {
+//                return groupDao.queryContacts('%' + searchQuery + '%');
+//            }
+//        };
+//        asyncTaskRunner.executeAsync(searchOperation, searchActivityThread);
+//    }
 }

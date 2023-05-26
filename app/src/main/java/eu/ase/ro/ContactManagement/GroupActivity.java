@@ -1,5 +1,6 @@
 package eu.ase.ro.ContactManagement;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,28 +13,47 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.ase.ro.ContactManagement.async.Callback;
+import eu.ase.ro.ContactManagement.db.GroupService;
+import eu.ase.ro.ContactManagement.model.Contact;
+import eu.ase.ro.ContactManagement.model.Group;
+import eu.ase.ro.ContactManagement.utils.GroupAdapter;
+
 public class GroupActivity extends AppCompatActivity {
 
+
+    public static final String ACTION = "action";
+    public static final String UPDATE_ACTION = "update";
+    public static final String UPDATED_POSITION = "updatePosition";
+    public static final String ADD_ACTION = "add";
+    private ActivityResultLauncher<Intent> launcher;
+
+    private List<Group> groups = new ArrayList<>();
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-
-    private ActivityResultLauncher<Intent> addGroupLauncher;
-
-    private Fragment currentFragment;
-
     private FloatingActionButton fabAddGroup;
+    ListView lvGroups;
+
+    private GroupService groupService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +61,10 @@ public class GroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_group);
         configNavigation();
 
-
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setCheckedItem(R.id.nav_group);
-        fabAddGroup = findViewById(R.id.fab_add_group);
-        fabAddGroup.setOnClickListener(getAddGroupEvent());
-
-        addGroupLauncher = registerAddGroupLauncher();
+        initComponents();
+        launcher = getLauncher();
+        groupService = new GroupService(getApplicationContext());
+        groupService.getAll(getAllCallback());
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -84,17 +101,20 @@ public class GroupActivity extends AppCompatActivity {
         });
     }
 
-//    private void openDefaultFragment(Bundle savedInstanceState){
-//        if(savedInstanceState == null){
-////            currentFragment = HomeFragment.getInstance();
-//            openFragment();
-//            navigationView.setCheckedItem(R.id.nav_contact);
-//        }
-//    }
+    private void initComponents() {
+        // initialise your views
+        fabAddGroup = findViewById(R.id.fab_add_group);
+        fabAddGroup.setOnClickListener(getAddGroupEvent());
+        lvGroups = findViewById(R.id.lv_group);
+        lvGroups.setOnItemClickListener(getItemClickEventListener());
+        lvGroups.setOnItemLongClickListener(getItemLongClickEventListener());
+        addAdapter();
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setCheckedItem(R.id.nav_group);
+        fabAddGroup = findViewById(R.id.fab_add_group);
+        fabAddGroup.setOnClickListener(getAddGroupEvent());
+    }
 
-//    private void openFragment(){
-//        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_container, currentFragment).commit();
-//    }
 
     private void configNavigation() {
         //initialize toolbar
@@ -120,30 +140,128 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(GroupActivity.this, AddGroupActivity.class);
-//                intent.putExtra(ACTION, ADD_ACTION);
-                addGroupLauncher.launch(intent);
+                intent.putExtra(ACTION, ADD_ACTION);
+                launcher.launch(intent);
             }
         };
     }
 
-    private ActivityResultLauncher<Intent> registerAddGroupLauncher() {
-
-        ActivityResultCallback<ActivityResult> callback = getAddGroupResultCallback();
+    private ActivityResultLauncher<Intent> getLauncher() {
+        ActivityResultCallback<ActivityResult> callback = getAddGroupActivityResultCallback();
         return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), callback);
     }
 
-    //
-    private ActivityResultCallback<ActivityResult> getAddGroupResultCallback() {
+    private ActivityResultCallback<ActivityResult> getAddGroupActivityResultCallback() {
         return new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-//                    Group Group = result.getData().getParcelableExtra(AddCo.EXPENSE_KEY);
-//                    expenses.add(expense);
-//                    Log.i("MainActivity", expenses.toString());
-//                    if (currentFragment instanceof HomeFragment) {
-//                        ((HomeFragment) currentFragment).notifyAdapter();
-//                    }
+                if (result.getData() == null || result.getResultCode() != RESULT_OK) {
+                    return;
+                }
+                Group group = (Group) result.getData().getSerializableExtra(AddGroupActivity.GROUP_KEY);
+                if (ADD_ACTION.equals(result.getData().getStringExtra(ACTION))) {
+                    groupService.insert(group, getInsertCallback());
+                } else if (UPDATE_ACTION.equals(result.getData().getStringExtra(ACTION))) {
+                    int position = result.getData().getIntExtra(UPDATED_POSITION, 0);
+                    Log.i("MainActivityDrawerHome", "Group name "+ group.getName());
+                    groupService.update(group, getUpdateCallback(position));
+                }
+            }
+        };
+    }
+
+    private Callback<Group> getInsertCallback() {
+        return new Callback<Group>() {
+            @Override
+            public void runResultOnUiThread(Group result) {
+                //aici suntem cu notificarea din baza de date
+                groups.add(result);
+                Log.i("MainActivityDrawerHome", "Group name on getInsertCallback" + result.toString());
+                notifyAdapter();
+            }
+        };
+    }
+    private Callback<List<Group>> getAllCallback() {
+        return new Callback<List<Group>>() {
+            @Override
+            public void runResultOnUiThread(List<Group> result) {
+                groups.addAll(result);
+                notifyAdapter();
+            }
+        };
+    }
+
+    private Callback<Group> getUpdateCallback(int position) {
+        return new Callback<Group>() {
+            @Override
+            public void runResultOnUiThread(Group result) {
+                Group group = groups.get(position);
+                group.setName(result.getName());
+                notifyAdapter();
+            }
+        };
+    }
+
+
+
+    private void addAdapter() {
+        GroupAdapter adapter = new GroupAdapter(getApplicationContext(), R.layout.lv_item_group, groups, getLayoutInflater());
+        lvGroups.setAdapter(adapter);
+    }
+
+    private void notifyAdapter() {
+        GroupAdapter adapter = (GroupAdapter) lvGroups.getAdapter();
+        adapter.notifyDataSetChanged();
+    }
+    private AdapterView.OnItemClickListener getItemClickEventListener() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getApplicationContext(), AddGroupActivity.class);
+                intent.putExtra(AddGroupActivity.GROUP_KEY, groups.get(i));
+                intent.putExtra(UPDATED_POSITION, i);
+                intent.putExtra(ACTION, UPDATE_ACTION);
+                launcher.launch(intent);
+            }
+        };
+    }
+
+    private AdapterView.OnItemLongClickListener getItemLongClickEventListener() {
+        return new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                showDeleteConfirmationDialog(position);
+                return true;
+            }
+        };
+    }
+
+    private void showDeleteConfirmationDialog(int position) {
+        new AlertDialog.Builder(GroupActivity.this)
+                .setTitle("Delete group")
+                .setMessage("Are you sure you want to delete this group?")
+                .setPositiveButton(android.R.string.no, null)
+                .setNegativeButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // delete group
+                        Group groupToDelete = groups.get(position);
+                        groupService.delete(groupToDelete, getDeleteCallback(position));
+                    }
+                })
+                .setIcon(ContextCompat.getDrawable(GroupActivity.this, R.drawable.ic_baseline_front_hand_24))
+                .show();
+    }
+
+    private Callback<Boolean> getDeleteCallback(final int position) {
+        return new Callback<Boolean>() {
+            @Override
+            public void runResultOnUiThread(Boolean result) {
+                if(result) {
+                    groups.remove(position);
+                    notifyAdapter();
+                    Toast.makeText(GroupActivity.this, "Group deleted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(GroupActivity.this, "Error occurred while deleting group", Toast.LENGTH_SHORT).show();
                 }
             }
         };

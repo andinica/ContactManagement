@@ -79,4 +79,14 @@ public class ContactService {
 
         asyncTaskRunner.executeAsync(deleteOperation, deleteActivityThread);
     }
+
+    public void queryContacts(String searchQuery, Callback<List<Contact>> searchActivityThread) {
+        Callable<List<Contact>> searchOperation = new Callable<List<Contact>>() {
+            @Override
+            public List<Contact> call() throws Exception {
+                return contactDao.queryContacts('%' + searchQuery + '%');
+            }
+        };
+        asyncTaskRunner.executeAsync(searchOperation, searchActivityThread);
+    }
 }

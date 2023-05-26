@@ -77,16 +77,7 @@ public class AddContactActivity extends AppCompatActivity {
         btnSave.setOnClickListener(saveContactEventListener());
     }
 
-//    private Callback<Contact> getInsertCallback() {
-//        return new Callback<Contact>() {
-//            @Override
-//            public void runResultOnUiThread(Contact result) {
-//                //aici suntem cu notificarea din baza de date
-//                contacts.add(result);
-//                notifyAdapter();
-//            }
-//        };
-//    }
+
     private View.OnClickListener saveContactEventListener() {
         return new View.OnClickListener() {
             @Override
@@ -138,13 +129,6 @@ public class AddContactActivity extends AppCompatActivity {
         return true;
     }
 
-//    private void populateFields() {
-//        tietFname.setText("test");
-//        tietLname.setText("TEST");
-//        spnGroup.setSelection(0); // selects the first item in the spinner
-//        tietPnumber.setText("1234567890");
-//        tietAddress.setText("Test Street");
-//    }
 
     private void createFromViews() {
         int day = dpBday.getDayOfMonth();

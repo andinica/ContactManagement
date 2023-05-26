@@ -1,7 +1,7 @@
 package eu.ase.ro.ContactManagement.utils;
 
 import android.content.Context;
-import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,40 +11,33 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.w3c.dom.Text;
-
-import java.util.Date;
 import java.util.List;
 
 import eu.ase.ro.ContactManagement.R;
-import eu.ase.ro.ContactManagement.model.Contact;
+import eu.ase.ro.ContactManagement.model.Group;
 
-public class ContactAdapter extends ArrayAdapter<Contact> {
+public class GroupAdapter extends ArrayAdapter<Group> {
     private Context context;
-    private List<Contact> contacts;
+    private List<Group> groups;
     private int resource;
     private LayoutInflater inflater;
 
-    public ContactAdapter(@NonNull Context context, int resource, @NonNull List<Contact> objects, LayoutInflater inflater) {
+    public GroupAdapter(@NonNull Context context, int resource, @NonNull List<Group> objects, LayoutInflater inflater) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
-        this.contacts = objects;
+        this.groups = objects;
         this.inflater = inflater;
     }
-
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = inflater.inflate(resource, parent, false);
-        Contact contact = contacts.get(position);
-        if (contact != null) {
-            TextView tv_name = view.findViewById(R.id.tv_lv_contact_name);
-            TextView tv_phone = view.findViewById(R.id.tv_lv_contact_phone);
-            String name = contact.getFirstName() + " " + contact.getLastName();
-            addTextViewContent(tv_name, name);
-            addTextViewContent(tv_phone, contact.getPhoneNumber());
-
+        Group group = groups.get(position);
+        if (group != null) {
+            TextView tv_name = view.findViewById(R.id.tv_lv_group_name);
+            addTextViewContent(tv_name, group.getName());
+            Log.i("MainActivityDrawerHome", "Group name on getView = " + group.getName());
         }
         return view;
     }
@@ -56,5 +49,4 @@ public class ContactAdapter extends ArrayAdapter<Contact> {
             textView.setText(R.string.lv_contact_value);
         }
     }
-
 }

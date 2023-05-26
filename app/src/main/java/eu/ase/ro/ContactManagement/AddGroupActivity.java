@@ -2,7 +2,9 @@ package eu.ase.ro.ContactManagement;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -14,15 +16,15 @@ import java.util.Date;
 
 import eu.ase.ro.ContactManagement.model.Contact;
 import eu.ase.ro.ContactManagement.model.Group;
-import eu.ase.ro.ContactManagement.utils.DateConverter;
 
 public class AddGroupActivity extends AppCompatActivity {
 
 
+    public static final String GROUP_KEY = "groupKey";
+
     private Intent intent;
     private Group group = null;
     private Button btnSave;
-
     TextInputEditText tietGroupName;
 
 
@@ -32,6 +34,10 @@ public class AddGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_group);
         intent = getIntent();
         initComponents();
+        if (intent.hasExtra(GROUP_KEY)) {
+            Group group = (Group) intent.getSerializableExtra(GROUP_KEY);
+            tietGroupName.setText(group.getName());
+        }
     }
 
     public void initComponents() {
@@ -46,7 +52,8 @@ public class AddGroupActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isValid()) {
                     createFromViews();
-//                    intent.putExtra(EXPENSE_KEY, contact);
+                    Log.i("MainActivityDrawer","Group is: " + group.toString());
+                    intent.putExtra(GROUP_KEY, group);
                     setResult(RESULT_OK, intent);
                     finish();
                 }
